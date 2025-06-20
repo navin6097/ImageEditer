@@ -13,9 +13,12 @@ def get_ip_info(ip):
         return None, None, {}
 
 def reverse_geocode(lat, lon):
-    geolocator = Nominatim(user_agent="geoapi")
-    location = geolocator.reverse((lat, lon), exactly_one=True)
-    return location.address if location else "Address not found"
+    try:
+        geolocator = Nominatim(user_agent="geoapi")
+        location = geolocator.reverse((lat, lon), exactly_one=True)
+        return location.address if location else "Address not found"
+    except:
+        return "Reverse geocoding failed"
 
 @app.route("/")
 def home():
@@ -24,7 +27,8 @@ def home():
     address = reverse_geocode(lat, lon) if lat and lon else "Not available"
 
     return f"""
-        <h2>IP Address: {ip}</h2>
+        <h1>IP & Location Info</h1>
+        <p><b>IP Address:</b> {ip}</p>
         <p><b>City:</b> {data.get('city')}</p>
         <p><b>Region:</b> {data.get('regionName')}</p>
         <p><b>Country:</b> {data.get('country')}</p>
@@ -33,6 +37,4 @@ def home():
         <p><b>Address:</b> {address}</p>
     """
 
-if __name__ == "__main__":
-    app.run()
 
